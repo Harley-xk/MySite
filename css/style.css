@@ -485,14 +485,14 @@ li {
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.6);
 }
 .profile-name {
-  font-size: 2rem;
-  line-height: 3rem;
+  font-size: 1.2em;
+  line-height: 2rem;
   padding: 0.5rem 0 0 0;
   color: #333;
   text-align: center;
 }
 .profile-signature {
-  font-size: 1rem;
+  font-size: 0.85rem;
   text-align: center;
 }
 .profile-social {
@@ -513,7 +513,7 @@ li {
 .profile-social .iconfont-archer::before {
   display: inline-block;
   color: #777;
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin: 0 0.4rem 0 0;
 }
 .profile-social .iconfont-archer:last-of-child::before {
@@ -529,7 +529,7 @@ li {
   color: #0cb49d;
 }
 .profile-social .github::before {
-  font-size: 1rem;
+  font-size: 1.2rem;
   content: '\e69f';
 }
 .profile-social .github:hover::before {
@@ -539,7 +539,7 @@ li {
   top: 2px;
 }
 .profile-social .wechat::before {
-  font-size: 1rem;
+  font-size: 1.2rem;
   content: '\ec7d';
 }
 .profile-social .wechat:hover::before {
@@ -566,7 +566,7 @@ li {
   color: #36a1d3;
 }
 .profile-social .weibo::before {
-  font-size: 1rem;
+  font-size: 1.2rem;
   content: '\e619';
 }
 .profile-social .weibo:hover::before {
