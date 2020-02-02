@@ -1,19 +1,19 @@
 # ========== Profile ========== #
 # avatar
-avatar: /avatar/Misaka.jpg
+avatar: /avatar/avatar.jpg
 # author name
-author: fi3ework
+author: 好吃的碎碎冰
 # signature
-signature: witness me
+signature: Swift Developer
 # SNS (you can custom the order)
 social:
-  email: 12345@qq.com
-  github: //github.com/fi3ework
+  github: //github.com/Harley-xk
+  weibo: https://weibo.com/u/1161848005
   # wechat and qq should be a path of qr-code image
-  wechat: /assets/example_qr.png
-  qq: 
+  wechat: /assets/wechat.jpg
+  qq:
+  email: harley.gb@foxmail.com
   telegram: 
-  weibo: 
   zhihu: 
   douban: 
   facebook: 
@@ -29,30 +29,30 @@ social:
   others: 
   rss: 
 # friends
-friends:
-  friendA: //www.baidu.com
-  friendB: //www.google.com
-  friendC: 
+# friends:
+#   friendA: //www.baidu.com
+#   friendB: //www.google.com
+#   friendC: 
 about:
-  enable: true
+  enable: false
   image: '/intro/about-bg.jpg'
 
 # ========== Site ========== #
 # title of the site (good for SEO)
-SEO_title: fi3ework's Studio
+SEO_title: 碎碎冰工坊
 # keywords for site (good for SEO)
 SEO_keywords:
   - hexo
   - 'hexo-theme'
   - 'hexo-blog'
 # main title shown in header image
-main_title: fi3ework's Studio.
+main_title: 碎碎冰工坊
 # subtitle
-subtitle: it's better to burn out than to fade away
+subtitle: 给时光以生命，给岁月以文明
 # site haeder image
-site_header_image: '/intro/index-bg.jpg'
+site_header_image: '/intro/2020.png'
 # post haeder image
-post_header_image: '/intro/post-bg.jpg'
+post_header_image: '/intro/swift-code.png'
 # 404 image
 _404_image: '/intro/404-bg.jpg'
 
@@ -73,7 +73,7 @@ comment:
   # Livere  site: https://livere.com/
   livere_uid: 
   # Disqus  site: https://disqus.com/
-  disqus_shortname: 
+  disqus_shortname: harley-xk-studio
   # Gitment  site: https://github.com/imsun/gitment
   gitment_owner: 
   gitment_repo: 
@@ -96,13 +96,13 @@ busuanzi_slug: 'PV: ${count} :)'
 # Baidu analytics
 baidu_analytics: 
 # Google analytics
-google_analytics: 
+google_analytics: UA-67049148-5
 # CNZZ analytics
 CNZZ_analytics: 
 
 # ========== Others ========== #
 # favicon
-favicon: /assets/favicon.ico
+favicon: /assets/favicon.png
 # truncate length of abstracts in index page (the default is 300, there will be no abstruct if you input 0)
 truncate_length: 
 # enable toc
@@ -111,10 +111,10 @@ toc: true
 reading_info: true
 # intro height (the default is 50 percents of the screen, you can input other number)
 index_intro_height: 50
-post_intro_height: 50
+post_intro_height: 40
 about_intro_height: 50
 # copyright
 copyright:
-  enable: true
+  enable: false
   # https://creativecommons.org/
   license: '本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可'
