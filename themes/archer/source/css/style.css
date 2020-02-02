@@ -1321,7 +1321,7 @@ html::-webkit-scrollbar-track:hover,
 .abstract-content code,
 .article-entry pre,
 .article-entry code {
-  font-family: 'Source Code Pro', Consolas, Menlo, Monaco, 'Courier New',
+  font-family: 'Monaco', 'Source Code Pro', Consolas, Menlo, Monaco, 'Courier New',
     monospace;
   font-weight: 400;
 }
@@ -1506,7 +1506,7 @@ html::-webkit-scrollbar-track:hover,
 .abstract-content .gist .gist-file,
 .article-entry .gist .gist-file {
   border: none;
-  font-family: 'Source Code Pro', Consolas, Monaco, Menlo, Consolas, monospace;
+  font-family: 'Monaco', 'Source Code Pro', Consolas, Monaco, Menlo, Consolas, monospace;
   margin: 0;
 }
 .abstract-content .gist .gist-file .gist-data,
