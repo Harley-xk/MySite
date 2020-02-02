@@ -2,7 +2,7 @@
 # avatar
 avatar: /avatar/avatar.jpg
 # author name
-author: 好吃的碎碎冰
+author: Harley.xk
 # signature
 signature: Swift Developer
 # SNS (you can custom the order)
@@ -39,14 +39,14 @@ about:
 
 # ========== Site ========== #
 # title of the site (good for SEO)
-SEO_title: 碎碎冰工坊
+SEO_title: Harley's Studio
 # keywords for site (good for SEO)
 SEO_keywords:
   - hexo
   - 'hexo-theme'
   - 'hexo-blog'
 # main title shown in header image
-main_title: 碎碎冰工坊
+main_title: Harley's Studio
 # subtitle
 subtitle: 给时光以生命，给岁月以文明
 # site haeder image
