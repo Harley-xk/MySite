@@ -5,7 +5,7 @@ abstract: 每次新创建一个项目，我们总是要做这些事情：创建�
 tags:
  - iOS
  - Swift
- - Cookiecutter
+ - Xcode
 ---
 
 ## 前言
