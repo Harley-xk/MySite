@@ -2,6 +2,9 @@
 title: 使用 SwiftLint 进行 Swift 代码规范检查
 date: 2017-03-24 16:59
 abstract: SwiftLint 是 Realm 推出的一款 Swift 代码规范检查工具，基于 Github 公布的 Swift 代码规范进行代码检查，并且能够很好的和 Xcode 整合。配置好所有的设置之后，在 Xcode 中执行编译时，SwiftLint 会自动运行检查，不符合规范的代码会通过警告或者 error 的形式指示出来，并且拥有丰富的配置项，可以进行大量的自定义，相当方便。
+tags:
+ - Swift
+ - Xcode
 ---
 
 > 最近跟着公司大佬在做 Laravel 后端开发，要求使用 php lint 进行代码规范检查之后才能 push 代码，保证所有人写出风格统一的代码，方便后期的维护和 Review，于是开始往老本行上反思。

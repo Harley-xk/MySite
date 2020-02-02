@@ -2,6 +2,9 @@
 title: 实现 UITableViewCell 侧滑操作列表
 date: 2017-04-07 14:27
 abstract: 我们都知道 `UITableView` 支持实现侧滑操作，一般用来实现删除一个项目，实现起来也很简单，只需要实现 `UITableView` 的三个代理方法
+tags:
+ - iOS
+ - Swift
 ---
 
 ## 曾经

@@ -2,6 +2,10 @@
 title: 神笔马良——基于 Metal 的涂鸦框架
 date: 2018-05-07 22:31
 abstract: MaLiang 是 iOS 平台基于 Metal 的涂鸦绘图框架，完全使用 Swift 实现，支持自定义纹理、缩放、压力感应等特性，并且提供了较大的自定义扩展的空间
+tags:
+ - iOS
+ - Swift
+ - Metal
 ---
 
 > 取这个名字有投机取巧的嫌疑，希望能对得起先贤 >_<

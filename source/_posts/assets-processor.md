@@ -2,6 +2,10 @@
 title: 使用 Assets Processor 处理 Xcode 图片资源
 date: 2017-05-26 08:27
 abstract: 自从 Xcode ghost 事件之后，苹果直接在 8.0以上的版本中禁止了 Xcode 的第三方插件。苹果一直很霸道，这么做虽然确实保证了安全性，但是却同时打死了好多确实很方便和实用的插件，比如RTImageAssets。虽然苹果另外提供了 Code Editor Extension 作为补充，但是一来生态完善程度不足，这方面的扩展程序还太少，二来限制太多，很多功能无法作为代码编辑器的插件存在。
+tags:
+ - iOS
+ - Swift
+ - Xcode
 ---
 
 > 自从 Xcode ghost 事件之后，苹果直接在 8.0以上的版本中禁止了 Xcode 的第三方插件。苹果一直很霸道，这么做虽然确实保证了安全性，但是却同时打死了好多确实很方便和实用的插件，比如说 [**RTImageAssets**](https://github.com/rickytan/RTImageAssets)。

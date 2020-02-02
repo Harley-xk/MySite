@@ -2,6 +2,9 @@
 title: UIStatusBarStyle 解惑
 date: 2017-04-25 17:16
 abstract: 作为一个强迫症晚期患者，对于 StatusBar 这样的细节也是无法放过的。对于每一个界面，StatusBar 都必须显示成需要的正确的风格，为此呕心沥血，殚精竭虑。。。
+tags:
+ - iOS
+ - Swift
 ---
 
 > 作为一个强迫症晚期患者，对于 StatusBar 这样的细节也是无法放过的。对于每一个界面，StatusBar 都必须显示成需要的正确的风格，为此呕心沥血，殚精竭虑。。。

@@ -2,6 +2,9 @@
 title: Swift 造轮子之自制 HUD
 date: 2017-11-13 17:16
 abstract: HUD 是每个 iOS App 的必备组件之一，市面上 Objective-C 的版本也是五花八门。然而转入 Swift 之后并没有一个明星组件出现，仅有的那几个也不能完全满足需求，无奈只能自己造轮子了
+tags:
+ - iOS
+ - Swift
 ---
 
 > HUD 是每个 iOS App 的必备组件之一，市面上 Objective-C 的版本也是五花八门。然而转入 Swift 之后并没有一个明星组件出现，仅有的那几个也不能完全满足需求，无奈只能自己造轮子了。
