@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Harley.xk">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Harley.xk">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="Swift Developer，iOS/Vapor">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>Swift 4 踩坑之 Codable 协议 · Harley&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/favicon.png" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+    <script>
+        (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-67049148-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+    
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Harley&#39;s Studio</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Swift 4 踩坑之 Codable 协议</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Harley's Studio</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:40vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/swift-code.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            Swift 4 踩坑之 Codable 协议
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Swift">Swift</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数: <span class="post-count word-count">4.2k</span>阅读: <span class="post-count reading-time">16 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2017/06/28</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <blockquote>
+<p>WWDC 过去有一段时间了，最近终于有时间空闲，可以静下心来仔细研究一下相关内容。对于开发者来说，本届WWDC 最重要的消息还是得属 Swift 4 的推出。</p>
+<p>Swift 经过三年的发展，终于在 API 层面趋于稳定。从 Swift 3 迁移代码到 Swift 4 终于不用像 2 到 3 那样痛苦了。这对开发者来说实在是个重大利好，应该会吸引一大批对 Swift 仍然处于观望状态的开发者加入。</p>
+<p>另外 Swift 4 引入了许多新的特性，像是 fileprivate 关键字的限制范围更加精确了；声明属性终于可以同时限制类型和协议了；新的 KeyPath API 等等，从这些改进我们可以看到，Swift 的生态越来越完善，Swift 本身也越来越强大。</p>
+<p>而 Swift 4 带来的新特性中，最让人眼前一亮的，我觉得非 <strong>Codable</strong> 协议莫属，下面就来介绍下我自己对 <strong>Codable</strong> 协议踩坑的经验总结。</p>
+</blockquote>
+<h2 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h2><p>Swift 由于类型安全的特性，对于像 JSON 这类弱类型的数据处理一直是一个比较头疼的问题，虽然市面上许多优秀的第三方库在这方面做了不少努力，但是依然存在着很多难以克服的缺陷，所以 <strong>Codable</strong> 协议的推出，一来打破了这样的僵局，二来也给我们解决类似问题提供了新的思路。</p>
+<p>通过查看定义可以看到，<strong>Codable</strong> 其实是一个组合协议，由 <code>Decodable</code> 和 <code>Encodable</code> 两个协议组成：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// A type that can convert itself into and out of an external representation.</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Codable</span> = <span class="type">Decodable</span> &amp; <span class="type">Encodable</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/// A type that can encode itself to an external representation.</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">Encodable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">encode</span><span class="params">(to encoder: Encoder)</span></span> <span class="keyword">throws</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// A type that can decode itself from an external representation.</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">Decodable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Encodable</code> 和 <code>Decodable</code> 分别定义了 <code>encode(to:)</code> 和 <code>init(from:)</code> 两个协议函数，分别用来实现数据模型的归档和外部数据的解析和实例化。最常用的场景就是接口 JSON 数据解析和模型创建。但是 <strong>Codable</strong> 的能力并不止于此，这个后面会说。</p>
+<h2 id="解析-JSON-对象"><a href="#解析-JSON-对象" class="headerlink" title="解析 JSON 对象"></a>解析 JSON 对象</h2><p>先来看 <code>Decodable</code> 对 JSON 数据对象的解析。Swift 为我们做了绝大部分的工作，Swift 中的基本数据类型比如 <code>String</code>、<code>Int</code>、<code>Float</code> 等都已经实现了 <strong>Codable</strong> 协议，因此如果你的数据类型只包含这些基本数据类型的属性，只需要在类型声明中加上 <strong>Codable</strong> 协议就可以了，不需要写任何实际实现的代码，这也是 <strong>Codable</strong> 最大的优势所在。</p>
+<p>比如我们有下面这样一个学生信息的 JSON 字符串：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> jsonString =</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    "name": "小明",</span></span><br><span class="line"><span class="string">    "age": 12,</span></span><br><span class="line"><span class="string">    "weight": 43.2</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
+
+<p>这时候，只需要定义一个 <code>Student</code> 类型，声明实现 <code>Decodable</code> 协议即可，Swift 4 已经为我们提供了默认的实现：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Student</span>: <span class="title">Decodable</span> </span>&#123;   </span><br><span class="line">    <span class="keyword">var</span> name: <span class="type">String</span></span><br><span class="line">    <span class="keyword">var</span> age: <span class="type">Int</span></span><br><span class="line">    <span class="keyword">var</span> weight: <span class="type">Float</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，只需要一行代码就可以将 <strong><em>小明</em></strong> 解析出来了：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> xiaoming = <span class="keyword">try</span> <span class="type">JSONDecoder</span>().decode(<span class="type">Student</span>.<span class="keyword">self</span>, from: jsonString.data(using: .utf8)!)</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的是, <code>decode</code> 函数需要外部数据类型为 <code>Data</code> 类型，如果是字符串需要先转换为 <code>Data</code> 之后操作，不过像 <a href="https://github.com/Alamofire/Alamofire" target="_blank" rel="noopener"><strong>Alamofire</strong></a> 之类的网络框架，返回数据原本就是 <code>Data</code> 类型的。<br>另外 <code>decode</code> 函数是标记为 <code>throws</code> 的，如果解析失败，会抛出一个异常，为了保证程序的健壮性，需要使用 <code>do-catch</code> 对异常情况进行处理:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> xiaoming = <span class="keyword">try</span> <span class="type">JSONDecoder</span>().decode(<span class="type">Student</span>.<span class="keyword">self</span>, from: data)</span><br><span class="line">&#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">    <span class="comment">// 异常处理</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="特殊数据类型"><a href="#特殊数据类型" class="headerlink" title="特殊数据类型"></a>特殊数据类型</h3><p>很多时候光靠基本数据类型并不能完成工作，往往我们需要用到一些特殊的数据类型。Swift 对许多特殊数据类型也提供了默认的 <strong>Codable</strong> 实现，但是有一些限制。</p>
+<h4 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    "gender": "male"</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>性别是一个很常用的信息，我们经常会把它定义成枚举：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Gender</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> male</span><br><span class="line">    <span class="keyword">case</span> female</span><br><span class="line">    <span class="keyword">case</span> other</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>枚举类型也默认实现了 <strong>Codable</strong> 协议，但是如果我们直接声明 <code>Gender</code> 枚举支持 <strong>Codable</strong> 协议，编译器会提示没有提供实现：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/619631-f5f9ada526a1538a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>其实这里有一个限制：枚举类型要默认支持 <strong>Codable</strong> 协议，需要声明为具有原始值的形式，并且原始值的类型需要支持 <strong>Codable</strong> 协议：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Gender</span>: <span class="title">String</span>, <span class="title">Decodable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> male</span><br><span class="line">    <span class="keyword">case</span> female</span><br><span class="line">    <span class="keyword">case</span> other</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于枚举类型原始值隐式赋值特性的存在，如果枚举值的名称和对应的 JSON 中的值一致，不需要显式指定原始值即可完成解析。</p>
+<h4 id="Bool"><a href="#Bool" class="headerlink" title="Bool"></a>Bool</h4><p>我们的数据模型现在新增了一个字段，用来表示某个学生是否是少先队员：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    "isYoungPioneer": true</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这时候，直接声明对应的属性就可以了:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isYoungPioneer: <span class="type">Bool</span></span><br></pre></td></tr></table></figure>
+<p><code>Bool</code> 类型原本没什么好讲的，不过因为踩到了坑，所以还是得说一说：<br>目前发现的坑是：<code>Bool</code> 类型默认<strong>只支持 <code>true</code>/<code>false</code> 形式的 <code>Bool</code> 值解析</strong>。对于一些使用 <code>0</code>/<code>1</code> 形式来表示 <code>Bool</code> 值的后端框架，只能通过 <code>Int</code> 类型解析之后再做转换了，或者可以自定义实现 <strong>Codable</strong> 协议。</p>
+<h4 id="日期解析策略"><a href="#日期解析策略" class="headerlink" title="日期解析策略"></a>日期解析策略</h4><p>说了枚举和 <code>Bool</code>，另外一个常用的特殊类型就是 <code>Date</code> 了，<code>Date</code> 类型的特殊性在于它有着各种各样的格式标准和表示方式，从数字到字符串可以说是五花八门，解析 <code>Date</code> 类型是任何一个同类型的框架都必须面对的课题。</p>
+<p>对此，<strong>Codable</strong> 给出的解决方案是：定义解析策略。<code>JSONDecoder</code> 类声明了一个 <code>DateDecodingStrategy</code> 类型的属性，用来制定 <code>Date</code> 类型的解析策略，同样先看定义：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// The strategy to use for decoding `Date` values.</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">DateDecodingStrategy</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Defer to `Date` for decoding. This is the default strategy.</span></span><br><span class="line">    <span class="keyword">case</span> deferredToDate</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Decode the `Date` as a UNIX timestamp from a JSON number.</span></span><br><span class="line">    <span class="keyword">case</span> secondsSince1970</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Decode the `Date` as UNIX millisecond timestamp from a JSON number.</span></span><br><span class="line">    <span class="keyword">case</span> millisecondsSince1970</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Decode the `Date` as an ISO-8601-formatted string (in RFC 3339 format).</span></span><br><span class="line">    <span class="keyword">case</span> iso8601</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Decode the `Date` as a string parsed by the given formatter.</span></span><br><span class="line">    <span class="keyword">case</span> formatted(<span class="type">DateFormatter</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Decode the `Date` as a custom value decoded by the given closure.</span></span><br><span class="line">    <span class="keyword">case</span> custom((<span class="type">Decoder</span>) <span class="keyword">throws</span> -&gt; <span class="type">Date</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Codable</strong> 对几种常用格式标准进行了支持，默认启用的策略是 <code>deferredToDate</code>，即从 *<em>UTC 时间2001年1月1日 *</em>开始的秒数，对应 <code>Date</code> 类型中 <code>timeIntervalSinceReferenceDate</code> 这个属性。比如 <code>519751611.125429</code> 这个数字解析后的结果是 <code>2017-06-21 15:26:51 +0000</code>。</p>
+<p>另外可选的格式标准有 <code>secondsSince1970</code>、<code>millisecondsSince1970</code>、<a href="https://zh.wikipedia.org/wiki/ISO_8601" target="_blank" rel="noopener"><code>iso8601</code></a> 等，这些都是有详细说明的通用标准，不清楚的自行谷歌吧 :)</p>
+<p>同时 <strong>Codable</strong> 提供了两种方自定义 <code>Date</code> 格式的策略：</p>
+<ul>
+<li><code>formatted(DateFormatter)</code><br>这种策略通过设置 <code>DateFormatter</code> 来指定 <code>Date</code> 格式</li>
+<li><code>custom((Decoder) throws -&gt; Date)</code><br><code>custom</code> 策略接受一个 <code>(Decoder) -&gt; Date</code> 的闭包，基本上是把解析任务完全丢给我们自己去实现了，具有较高的自由度</li>
+</ul>
+<h4 id="小数解析策略"><a href="#小数解析策略" class="headerlink" title="小数解析策略"></a>小数解析策略</h4><p>小数类型（<code>Float</code>／<code>Double</code>） 默认也实现了 <strong>Codable</strong> 协议，但是小数类型在 Swift 中有许多特殊值，比如圆周率（<code>Float.pi</code>）等。这里要说的是另外两个属性，先看定义：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// Positive infinity.</span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="comment">/// Infinity compares greater than all finite numbers and equal to other</span></span><br><span class="line"><span class="comment">/// infinite values.</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> infinity: <span class="type">Double</span> &#123; <span class="keyword">get</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// A quiet NaN ("not a number").</span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="comment">/// A NaN compares not equal, not greater than, and not less than every</span></span><br><span class="line"><span class="comment">/// value, including itself. Passing a NaN to an operation generally results</span></span><br><span class="line"><span class="comment">/// in NaN.</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> nan: <span class="type">Double</span> &#123; <span class="keyword">get</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><code>infinity</code> 表示正无穷（负无穷写作：<code>-infinity</code>），<code>nan</code> 表示没有值，这些特殊值没有办法使用数字进行表示，但是在 Swift 中它们是确确实实的值，可以参与计算、比较等。<br>不同的语言、框架对此会有类似的实现，但是表达方式可能不完全相同，因此如果在某些场景下需要解析这样的值，就需要做特殊转换了。</p>
+<p><strong>Codable</strong> 的实现方式比较简单粗暴，<code>JSONDecoder</code> 类型有一个属性 <code>nonConformingFloatDecodingStrategy</code> ，用来指定不一致的小数转换策略，默认值为 <code>throw</code>， 即直接抛出异常，解析失败。另外一个选择就是自己指定 <code>infinity</code>、<code>-infinity</code>、<code>nan</code> 三个特殊值的表示方式：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> decoder = <span class="type">JSONDecoder</span>()</span><br><span class="line">decoder.nonConformingFloatDecodingStrategy = .convertFromString(positiveInfinity: <span class="string">"infinity"</span>, negativeInfinity: <span class="string">"-infinity"</span>, nan: <span class="string">"nan"</span>)</span><br><span class="line"><span class="comment">// 另外一种表示方式</span></span><br><span class="line"><span class="comment">// decoder.nonConformingFloatDecodingStrategy = .convertFromString(positiveInfinity: "∞", negativeInfinity: "-∞", nan: "n/a")</span></span><br></pre></td></tr></table></figure>
+<p>目前看来只支持这三个特殊值的转换，不过这种特殊值的使用场景应该非常有限，至少在我自己五六年的开发生涯中还没有遇到过。</p>
+<h3 id="自定义数据类型"><a href="#自定义数据类型" class="headerlink" title="自定义数据类型"></a>自定义数据类型</h3><p>纯粹的基本数据类型依然不能很好地工作，实际项目的数据结构往往是很复杂的，一个数据类型经常会包含另一个数据类型的属性。比如说我们这个例子中，每个学生信息中还包含了所在学校的信息：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"小明"</span>,</span><br><span class="line">    <span class="attr">"age"</span>: <span class="number">12</span>,</span><br><span class="line">    <span class="attr">"weight"</span>: <span class="number">43.2</span></span><br><span class="line">    <span class="string">"school"</span>: &#123;</span><br><span class="line">      <span class="attr">"name"</span>: <span class="string">"市第一中学"</span>,</span><br><span class="line">      <span class="attr">"address"</span>: <span class="string">"XX市人民中路 66 号"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这时候就需要 Student 和 School 两个类型来组合表示：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">School</span>: <span class="title">Decodable</span> </span>&#123;</span><br><span class="line">	<span class="keyword">var</span> name: <span class="type">String</span></span><br><span class="line">	<span class="keyword">var</span> address: <span class="type">String</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Student</span>: <span class="title">Decodable</span> </span>&#123;   </span><br><span class="line">    <span class="keyword">var</span> name: <span class="type">String</span></span><br><span class="line">    <span class="keyword">var</span> age: <span class="type">Int</span></span><br><span class="line">    <span class="keyword">var</span> weight: <span class="type">Float</span></span><br><span class="line">    <span class="keyword">var</span> school: <span class="type">School</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于所有基本类型都实现了 <strong>Codable</strong> 协议，因此 <code>School</code> 与 <code>Student</code> 一样，只要所有属性都实现了 <strong>Codable</strong> 协议，就不需要手动提供任何实现即可获得默认的 <strong>Codable</strong> 实现。由于 <code>School</code> 支持了 <strong>Codable</strong> 协议，保证了 <code>Student</code> 依然能够获得默认的 <strong>Codable</strong> 实现，因此，嵌套类型的解析同样不需要额外的代码了。</p>
+<h3 id="自定义字段"><a href="#自定义字段" class="headerlink" title="自定义字段"></a>自定义字段</h3><p>很多时候前后端不一定能完全步调一致，观念相同。所以往往后端给出的数据结构中会有一些比较个性的字段名，当然有时候是我们自己。另外有一些框架（比如我正在用的 Laravel）习惯使用蛇形命名法，而 iOS 的代码规范推荐使用驼峰命名法，为了保证代码风格和平台特色，这时候就必须要自行指定字段名了。</p>
+<p>在研究自定义字段之前我们需要深入底层，了解下 <strong>Codable</strong> 默认是怎么实现属性的名称识别及赋值的。通过研究底层的 C++ 源代码可以发现，<strong>Codable</strong> 通过巧（kai）妙（guà）的方式，在编译代码时根据类型的属性，自动生成了一个 <code>CodingKeys</code> 的枚举类型定义，这是一个以 <code>String</code> 类型作为原始值的枚举类型，对应每一个属性的名称。然后再给每一个声明实现 <strong>Codable</strong> 协议的类型自动生成 <code>init(from:)</code> 和 <code>encode(to:)</code> 两个函数的具体实现，最终完成了整个协议的实现。</p>
+<p>所以我们可以自己实现 <code>CodingKeys</code> 的类型定义，并且给属性指定不同的原始值来实现自定义字段的解析。这样编译器会直接采用我们已经实现好的方案而不再重新生成一个默认的。</p>
+<p>比如 <code>Student</code> 需要增加一个出生日期的属性，后端接口使用蛇形命名，JSON 数据如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"小明"</span>,</span><br><span class="line">    <span class="attr">"age"</span>: <span class="number">12</span>,</span><br><span class="line">    <span class="attr">"weight"</span>: <span class="number">43.2</span></span><br><span class="line">    <span class="string">"birth_date"</span>: <span class="string">"1992-12-25"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这时候在 Student 类型声明中需要增加 <code>CodingKeys</code> 定义，并且将 <code>birthday</code> 的原始值设置为 <code>birth_date</code>：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Student</span>: <span class="title">Codable</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">var</span> birthday: <span class="type">Date</span></span><br><span class="line">	</span><br><span class="line">	<span class="class"><span class="keyword">enum</span> <span class="title">CodingKeys</span>: <span class="title">String</span>, <span class="title">CodingKey</span> </span>&#123;</span><br><span class="line">        <span class="keyword">case</span> name</span><br><span class="line">        <span class="keyword">case</span> age</span><br><span class="line">        <span class="keyword">case</span> weight</span><br><span class="line">        <span class="keyword">case</span> birthday = <span class="string">"birth_date"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，即使属性名称与 JSON 中的字段名称一致，如果自定义了 <code>CodingKeys</code>，这些属性也是无法省略的，否则会得到一个 <code>Type &#39;Student&#39; does not conform to protocol &#39;Codable&#39;</code> 的编译错误，这一点还是有点坑的。不过在编译时给 <code>CodingKeys</code> 补全其他默认的属性的声明在理论上是可行的，期待苹果后续的优化了。</p>
+<h3 id="可选值"><a href="#可选值" class="headerlink" title="可选值"></a>可选值</h3><p>有些字段有可能会是空值。还是用学生的出生日期来举例，假设有些学生的出生日期没有统计到，这时候后台返回数据格式有两种选择，一种是对于没有出生日期的数据，直接不包含 <code>birth_date</code> 字段，另一种是指定为空值：<code>&quot;birth_date&quot;: null</code></p>
+<p>对于这两种形式，都只需要将 birthday 属性声明为可选值即可正常解析：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">var</span> birthday: <span class="type">Date?</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h2 id="解析-JSON-数组"><a href="#解析-JSON-数组" class="headerlink" title="解析 JSON 数组"></a>解析 JSON 数组</h2><p><strong>Codable</strong> 协议同样支持数组类型，只需要满足一个前提：只要数组中的元素实现了 <strong>Codable</strong> 协议，数组将自动获得 <strong>Codable</strong> 协议的实现。</p>
+<p>使用 <code>JSONDecoder</code> 解析时只需要指定类型为对应的数组即可：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> students = <span class="keyword">try</span> <span class="type">JSONDecoder</span>().decode([<span class="type">Student</span>].<span class="keyword">self</span>, from: data)</span><br><span class="line">&#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">    <span class="comment">// 异常处理</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="归档数据"><a href="#归档数据" class="headerlink" title="归档数据"></a>归档数据</h2><p>归档数据使用 <code>Encodable</code> 协议，使用方式与 <code>Decodable</code> 一致。</p>
+<h3 id="导出为-JSON"><a href="#导出为-JSON" class="headerlink" title="导出为 JSON"></a>导出为 JSON</h3><p>将数据模型转换为 JSON 与解析过程类似，将 JSONDecoder 更换为 JSONEncoder 即可：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = <span class="keyword">try</span> <span class="type">JSONEncoder</span>().encode(xiaomin)</span><br><span class="line"><span class="keyword">let</span> json = <span class="type">String</span>(data: data, encoding: .utf8)</span><br></pre></td></tr></table></figure>
+
+<p>JSONEncoder 有一个 outputFormatting 的属性，可以指定输出 JSON 的排版风格，看定义：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">OutputFormatting</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Produce JSON compacted by removing whitespace. This is the default formatting.</span></span><br><span class="line">    <span class="keyword">case</span> compact</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/// Produce human-readable JSON with indented output.</span></span><br><span class="line">    <span class="keyword">case</span> prettyPrinted</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>compact</p>
+<p>默认的 compact 风格会移除 JSON 数据中的所有格式信息，比如换行、空格和缩紧等，以减小 JSON 数据所占的空间。如果导出的 JSON 数据用户程序间的通讯，对阅读要求不高时，推荐使用这个设置。</p>
+</li>
+<li><p>prettyPrinted</p>
+<p>如果输出的 JSON 数据是用来阅读查看的，那么可以选择 prettyPrinted，这时候输出的 JSON 会自动进行格式化，添加换行、空格和缩进，以便于阅读。类似于上面文中使用的 JSON 排版风格。</p>
+</li>
+</ul>
+<h2 id="属性列表-PropertyList"><a href="#属性列表-PropertyList" class="headerlink" title="属性列表(PropertyList)"></a>属性列表(PropertyList)</h2><p><strong>Codable</strong> 协议并非只支持 JSON 格式的数据，它同样支持属性列表，即 mac 上常用的 <code>plist</code> 文件格式。这在我们做一些系统配置之类的工作时会很有用。</p>
+<p>属性列表的解析和归档秉承了苹果API一贯的简洁易用的特点，使用方式 JSON 格式一致，并不需要对已经实现的 <strong>Codable</strong> 协议作任何修改，只需要将 <code>JSONEncoder</code> 和 <code>JSONDecoder</code> 替换成对应的 <code>PropertyListEncoder</code> 和 <code>PropertyListDecoder</code> 即可。</p>
+<p>属性列表本质上是特殊格式标准的 <code>XML</code> 文档，所以理论上来说，我们可以参照系统提供的 Decoder/Encoder 自己实现任意格式的数据序列化与反序列化方案。同时苹果也随时可能通过实现新的 Decoder/Encoder 类来扩展其他数据格式的处理能力。这也正是文章开头所说的，<strong>Codable</strong> 的能力并不止于此，它具有很大的可扩展空间。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>到此 <strong>Codable</strong> 的核心用法基本讲完了。相比目前比较常用的几个框架：</p>
+<p><a href="https://github.com/Hearst-DD/ObjectMapper" target="_blank" rel="noopener"><strong>ObjectMapper</strong></a> 使用范型机制进行模型解析，但是需要手动对每一个属性写映射关系，比较繁琐。我自己项目中也是用的这个框架，后来自己对其做了些优化，利用反射机制对基本数据类型实现了自动解析，但是自定义类型仍然需要手动写映射，并且必须继承实现了自动解析的 Model 基类，限制较多。</p>
+<p><a href="https://github.com/SwiftyJSON/SwiftyJSON" target="_blank" rel="noopener"><strong>SwiftyJSON</strong></a> 简单了解过，其本质其实只是将 JSON 解析成了字典类型的数据，而实际使用时依然需要使用下标方式去取值，非常繁琐且容易出错，不易阅读和维护，个人认为这是很糟糕的设计。</p>
+<p><a href="https://github.com/alibaba/HandyJSON" target="_blank" rel="noopener"><strong>HandyJSON</strong></a> 是阿里推出的框架，思路与 <strong>Codable</strong> 殊途同归，之前也用过一阵，当时因为对枚举和 <code>Date</code> 等类型的支持还不够完善，最终还是用回了<strong>ObjectMapper</strong>。不过目前看来完善程度已经很高了，或许可以再次尝试踩下坑。</p>
+<p>总体来说，<strong>Codable</strong> 作为语言层面对模型解析的支持方案，有其自身的优势。不过在灵活性上稍有欠缺，对自定义字段的支持也还不够人性化，期待后续的完善。</p>
+<p>对于第三方库来说，<strong>Codable</strong> 的推出既是一种挑战，但同时也是一个机遇，相信这些框架的作者们都会从 Codaable 获得许多灵感来优化提升自己的框架，在不久的将来制造一个百家争鸣的局面。</p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/2017/11/13/2017-chrysan/" title= "Swift 造轮子之自制 HUD">
+                    <div class="nextTitle">Swift 造轮子之自制 HUD</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2017/05/26/2017-assets-processor/" title= "使用 Assets Processor 处理 Xcode 图片资源">
+                    <div class="prevTitle">使用 Assets Processor 处理 Xcode 图片资源</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    <div id="disqus_thread"></div>
+    <script>
+        /**
+    *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        
+        var disqus_config = function () {
+        this.page.url = "https://me.harley-xk.studio/2017/06/28/2017-codable-swift-4/";  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "Swift 4 踩坑之 Codable 协议"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        
+        (function () { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://harley-xk-studio.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="//github.com/Harley-xk" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <a href="https://weibo.com/u/1161848005" class="iconfont-archer weibo" target="_blank" title=weibo></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+            
+                <a href="mailto:harley.gb@foxmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span>
+        <span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+        <span> @ author <a href="https://github.com/Harley-xk" target="_blank" rel="noopener">Harley-xk</a></span>
+    </div>
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:40vh;
+
+    >
+        <div class="toc-catalog">
+            <!-- <span class="iconfont-archer catalog-icon">&#xe613;</span><span></span> -->
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简单介绍"><span class="toc-number">1.</span> <span class="toc-text">简单介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解析-JSON-对象"><span class="toc-number">2.</span> <span class="toc-text">解析 JSON 对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#特殊数据类型"><span class="toc-number">2.1.</span> <span class="toc-text">特殊数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#枚举"><span class="toc-number">2.1.1.</span> <span class="toc-text">枚举</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Bool"><span class="toc-number">2.1.2.</span> <span class="toc-text">Bool</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#日期解析策略"><span class="toc-number">2.1.3.</span> <span class="toc-text">日期解析策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#小数解析策略"><span class="toc-number">2.1.4.</span> <span class="toc-text">小数解析策略</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义数据类型"><span class="toc-number">2.2.</span> <span class="toc-text">自定义数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义字段"><span class="toc-number">2.3.</span> <span class="toc-text">自定义字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可选值"><span class="toc-number">2.4.</span> <span class="toc-text">可选值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解析-JSON-数组"><span class="toc-number">3.</span> <span class="toc-text">解析 JSON 数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#归档数据"><span class="toc-number">4.</span> <span class="toc-text">归档数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#导出为-JSON"><span class="toc-number">4.1.</span> <span class="toc-text">导出为 JSON</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#属性列表-PropertyList"><span class="toc-number">5.</span> <span class="toc-text">属性列表(PropertyList)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结语"><span class="toc-number">6.</span> <span class="toc-text">结语</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 10
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/13</span><a class="archive-post-title" href= "/2020/02/12/install-swift-on-ubuntu/" >在 Ubuntu 系统中安装 Swift</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/03</span><a class="archive-post-title" href= "/2020/02/02/2020-2020/" >2020</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/14</span><a class="archive-post-title" href= "/2019/03/14/2019-cookiecutter/" >基于 Cookiecutter 打造 iOS 项目模版</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/08</span><a class="archive-post-title" href= "/2018/05/07/2018-maliang/" >神笔马良——基于 Metal 的涂鸦框架</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2017 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/14</span><a class="archive-post-title" href= "/2017/11/13/2017-chrysan/" >Swift 造轮子之自制 HUD</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/29</span><a class="archive-post-title" href= "/2017/06/28/2017-codable-swift-4/" >Swift 4 踩坑之 Codable 协议</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/26</span><a class="archive-post-title" href= "/2017/05/26/2017-assets-processor/" >使用 Assets Processor 处理 Xcode 图片资源</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/26</span><a class="archive-post-title" href= "/2017/04/25/2017-status-bar-styles/" >UIStatusBarStyle 解惑</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/07</span><a class="archive-post-title" href= "/2017/04/07/2017-tableview-cell-row-actions/" >实现 UITableViewCell 侧滑操作列表</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/25</span><a class="archive-post-title" href= "/2017/03/24/2017-swift-lint/" >使用 SwiftLint 进行 Swift 代码规范检查</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="iOS"><span class="iconfont-archer">&#xe606;</span>iOS</span>
+    
+        <span class="sidebar-tag-name" data-tags="Swift"><span class="iconfont-archer">&#xe606;</span>Swift</span>
+    
+        <span class="sidebar-tag-name" data-tags="Xcode"><span class="iconfont-archer">&#xe606;</span>Xcode</span>
+    
+        <span class="sidebar-tag-name" data-tags="随笔"><span class="iconfont-archer">&#xe606;</span>随笔</span>
+    
+        <span class="sidebar-tag-name" data-tags="Metal"><span class="iconfont-archer">&#xe606;</span>Metal</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Harley.xk"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

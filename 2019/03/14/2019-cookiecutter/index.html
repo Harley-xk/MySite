@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Harley.xk">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Harley.xk">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="Swift Developer，iOS/Vapor">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>基于 Cookiecutter 打造 iOS 项目模版 · Harley&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/favicon.png" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+    <script>
+        (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-67049148-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+    
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Harley&#39;s Studio</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">基于 Cookiecutter 打造 iOS 项目模版</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Harley's Studio</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:40vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/swift-code.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            基于 Cookiecutter 打造 iOS 项目模版
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "iOS">iOS</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Swift">Swift</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "Xcode">Xcode</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数: <span class="post-count word-count">2.2k</span>阅读: <span class="post-count reading-time">8 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2019/03/14</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>每次新创建一个项目，我们总是要做这些事情：创建项目、初始化 pod、安装 pod、配置工程、写(或者引入)一些框架性的代码。当项目写的多了，会发现这里面基本上是大量的重复劳动，每次要做的事情几乎是一样的，但是又不可避免。特别是当有时候想写一些玩具性质的小项目时，创建项目所使用的劳动量相比就更加明显了。</p>
+</blockquote>
+<p>其实可以看出来，以上这些工作其实都属于模版性质的，如果我们能够先编辑好一个项目模版，然后每次都基于这个模版创建新项目的话就好了。其实 Xcode 本身就提供了模版功能，多年前我也曾基于 Xcode 的模版功能做过一些简单的文件模版和项目模版。但是 Xcode 模版配置比较繁琐，并且官方的文档基本找不到（也可能是我没认真找）。</p>
+<p>那么有没有什么别的好办法呢？这就引出这次要说的主角了：<a href="https://cookiecutter.readthedocs.io/en/latest/" target="_blank" rel="noopener">Cookiecutter</a></p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Cookiecutter 是一个用 Python 开发的项目模版工具，在 <a href="https://github.com/audreyr/cookiecutter" target="_blank" rel="noopener">Github</a> 上可以找到它的源码，这个项目目前已经有将近一万个 star 了。</p>
+<p>Cookiecutter 并不是一个 iOS 专用的工具，它的支持相当广泛，基本上所有主流的项目方案都可以使用它来建立模版，这源于它十分简单粗暴的实现原理：先创建一个项目框架作为模版，将项目名称等一系列参数以关键字的方式在配置文件中指定好，然后新建项目时根据配置好的模版参数，替换模版中所有目录和子目录的名称，以及所有文本中匹配到的关键字。当然了，Cookiecutter 还有很多高级用法，可以去查询它的文档(可能需要借助梯子😔)。</p>
+<p>这篇文章只是抛砖引玉，介绍一下我基于 Cookiecutter 创建一个简单的 App 模版的过程。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>首先需要安装 Cookiecutter，针对不同的平台和环境，Cookiecutter 提供了相当多的安装方式。不过 iOS 开发者基本都在 macOS 环境下工作，所以其他的就略过了。</p>
+<p>mac 下官方推荐使用 Homebrew 来安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install Cookiecutter</span><br></pre></td></tr></table></figure>
+
+<p>整个安装过程都是自动的，非常简单。</p>
+<h2 id="创建模版"><a href="#创建模版" class="headerlink" title="创建模版"></a>创建模版</h2><h3 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h3><p>首先我们需要创建一个模版：打开 Xcode，新建一个单页应用。</p>
+<p><img src="/images/cookiecutter/QQ20190314-142251%402x.png" alt="新建单页应用"></p>
+<p>点击 <strong>next</strong>，然后将对应属性设置为 template 关键字：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Product Name: &#123;&#123;cookiecutter.product_name&#125;&#125;</span><br><span class="line">Organization Name: &#123;&#123;cookiecutter.organization_name&#125;&#125;</span><br><span class="line">Organization Identifier: &#123;&#123;cookiecutter.organization_identifier&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后点击 <code>next</code> 创建项目，如下图所示：</p>
+<p><img src="/images/cookiecutter/619631-e4d5989e654025cc.png" alt="创建项目"></p>
+<p>项目创建完毕后，打开 info.plist，将 Bundle identifier 指定为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.&#123;&#123;cookiecutter.organization_identifier&#125;&#125;.&#123;&#123;cookiecutter.product_name&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>否则 Xcode 默认会将 <code>{</code> 和 <code>}</code> 替换为 <code>-</code>，导致后续创建项目时替换失败。</p>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>接下来，在与刚创建完毕的项目根目录同级，也就是 <code>cookiecutter.product_name</code> 文件夹所在的目录，创建一个 <strong>cookiecutter.json</strong> 文件，内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"product_name"</span>: <span class="string">"Hello"</span>,</span><br><span class="line">    <span class="attr">"organization_name"</span>: <span class="string">"Someone Co.,Ltd."</span>,</span><br><span class="line">    <span class="attr">"organization_identifier"</span>: <span class="string">"someone"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JSON 中的 key 就是我们刚才创建项目时填写的那几个用双括号包含起来的名称，并且去掉 <code>cookiecutter</code> 前缀，key 对应的值表示默认值。使用 Cookiecutter 从模版创建项目时，它会询问配置文件中的这几个 key，让我们给它指定名称，如果不指定，则使用配置文件中的默认值。</p>
+<p>另外，需要哪些 key，以及 key 的名称是不固定的，你可以根据自己的需要自己定义任意数量的 key，只要保证在模版项目中使用相同的名称，<strong>并且需要带上 <code>cookiecutter</code> 前缀</strong>。</p>
+<p>至此，一个最简单的项目模版就创建完了，你也可以根据自己的需要给这个项目添加一些额外的代码，新建项目时所有额外添加的内容都将原样保留。</p>
+<h3 id="钩子"><a href="#钩子" class="headerlink" title="钩子"></a>钩子</h3><p>上面创建的项目非常简单，但是我们实际开发中一般都需要使用 Cocoapods 来管理第三方依赖，并且有些库几乎是所有项目都需要用到的，比如 <code>Alamofire</code>、<code>SnapKit</code> 等等。那么能不能通过模版一并完成 pods 的配置和安装呢？</p>
+<p>这就可以用上 Cookiecutter 的钩子功能了，钩子通俗一点讲也叫回调，可以在某些特性情况下触发一些事件，执行一些操作等。</p>
+<p>Cookiecutter 的钩子配置非常简单，只需要在配置文件同级目录下新建一个 <code>hooks</code> 目录，然后将写好的脚本放在该目录中，Cookiecutter 会自动调用。</p>
+<p>目前 Cookiecutter 支持两个事件，即创建项目之前和创建项目完成之后，会分别调用对应的脚本文件，目前支持 shell 脚本和 python 脚本。在安装前调用的脚本需要命名为 <code>pre_gen_project.sh</code> 或者 <code>pre_gen_project.py</code>；同样的，在安装之后调用的脚本需要命名为 <code>post_gen_project.sh</code> 或者 <code>post_gen_project.py</code>，取决于脚本使用的语言。</p>
+<h4 id="自动安装-pods"><a href="#自动安装-pods" class="headerlink" title="自动安装 pods"></a>自动安装 pods</h4><p>首先需要在项目目录下，即 <code>/</code> 目录下创建 Podfile 文件，并配置好常用的依赖库：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">target <span class="string">'&#123;&#123;cookiecutter.product_name&#125;&#125;'</span> <span class="keyword">do</span></span><br><span class="line"></span><br><span class="line">  use_frameworks!</span><br><span class="line"></span><br><span class="line">  <span class="comment"># Pods for &#123;&#123;cookiecutter.product_name&#125;&#125;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Networking</span></span><br><span class="line">  pod <span class="string">'Alamofire'</span></span><br><span class="line">  <span class="comment"># ImageCache</span></span><br><span class="line">  pod <span class="string">'Kingfisher'</span></span><br><span class="line">  <span class="comment"># AutoLayout</span></span><br><span class="line">  pod <span class="string">'SnapKit'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>好了，不要执行 <code>pod install</code>，因为这只是个模版，可能实际创建项目时这些库已经更新了，所以需要在创建项目时才安装依赖。</p>
+<p>接下来打开 <code>post_gen_project.sh</code>, 写上 pod 安装相关的命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">GREEN=<span class="string">'\033[0;32m'</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">"<span class="variable">$&#123;GREEN&#125;</span>Project successfuly generated!"</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">"<span class="variable">$&#123;GREEN&#125;</span>Installing Pods..."</span></span><br><span class="line">pod install</span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">"<span class="variable">$&#123;GREEN&#125;</span>Pods Install Finished"</span></span><br></pre></td></tr></table></figure>
+
+<p>其实只需要写一句 <code>pod install</code> 就够了，不过为了创建项目时命令行的输出内容能够更加友好，我添加了一些额外的状态输出的内容😏，你也可以在其中添加一些其他需要处理的事务。</p>
+<p>这时候我们的项目框架才算基本完成。此时，我们的项目模版目录应该是类似下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ios_template&#x2F;</span><br><span class="line">├── &#123;&#123;cookiecutter.product_name&#125;&#125;&#x2F;</span><br><span class="line">│   ├── &#123;&#123;cookiecutter.product_name&#125;&#125;.xcodeproj</span><br><span class="line">│   ├── Podfile</span><br><span class="line">│   └── ...</span><br><span class="line">├── hooks</span><br><span class="line">│   ├── pre_gen_project.sh</span><br><span class="line">│   └── post_gen_project.sh</span><br><span class="line">└── cookiecutter.json</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="分发模版"><a href="#分发模版" class="headerlink" title="分发模版"></a>分发模版</h3><p>模版做完了，放到哪里呢？本地目录也是可以的，Cookiecutter 支持从任何可以访问的路径加载项目模版，不过为了方便使用和团队共享，最好是将模版推送到 git 仓库中，这样也方便后期修改以及多人维护等。</p>
+<p>另外，如果你的模版项目非常大，也可以打包成 zip 上传，Cookiecutter 支持从 zip 包创建项目，创建时会自动解压。</p>
+<h3 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h3><p>创建项目也非常简单，确保 Cookiecutter 已经正确安装后，只需要 cd 到你准备创建项目的目录，然后执行以下命令就好了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cookiecutter https://github.com/Harley-xk/iOS_Template_Comet.git</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>后面的路径可以是本地路径也可以是远程路径，可以是 git，也可以是 zip。Cookiecutter 还支持很多其他的仓库形式，详细可以查看它的文档。</p>
+</blockquote>
+<p>命令执行后就开始创建项目了，Cookiecutter 会对你在配置文件中设置的每一个关键字进行询问，你可以输入新项目需要使用的值，或者也可以直接回车后使用默认值。</p>
+<p>可以看到命令行的输出如下：</p>
+<p><img src="/images/cookiecutter/619631-d6add963dcab88b4.png" alt="创建项目"></p>
+<p>Cookiecutter 会在用户目录下缓存所有安装过的项目模版，下次安装时会询问你是否需要更新模版：</p>
+<blockquote>
+<p>You’ve downloaded /Users/Harley-xk/.cookiecutters/iOS_Template_Comet before. Is it okay to delete and re-download it?</p>
+</blockquote>
+<p>输入 <code>yes</code>，它会自动更新模版后创建项目。</p>
+<p>另外可以看到在创建项目之后 <code>pod install</code> 指令也自动执行了，我们在 Podfile 里面指定的三个依赖库都已经成功安装了。可以进入 MyApp 目录下面，打开 <code>MyApp.xcworkspace</code> 查看创建完毕的项目：</p>
+<p><img src="/images/cookiecutter/QQ20190314-153222%402x.png" alt="创建完毕的项目"></p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>其实可以发现 Cookiecutter 的原理和使用都非常简单。现在项目越做越庞大，架构也越来越复杂，虽然我们可以通过组件化的方式最大化的重用代码，减少工作量，但是依然需要写大量的胶水代码来整合各个组件，做大量的项目配置、项目初始化的工作，通过使用 Cookiecutter，可以进一步节省大量的工作。</p>
+<p><em>ps. 我在 Github 上创建了我自己的 iOS 项目模版，你如果不想自己写，也可以使用<a href="https://github.com/Harley-xk/iOS_Template_Comet.git" target="_blank" rel="noopener">我的模版</a></em></p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/2020/02/02/2020-2020/" title= "2020">
+                    <div class="nextTitle">2020</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2018/05/07/2018-maliang/" title= "神笔马良——基于 Metal 的涂鸦框架">
+                    <div class="prevTitle">神笔马良——基于 Metal 的涂鸦框架</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    <div id="disqus_thread"></div>
+    <script>
+        /**
+    *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        
+        var disqus_config = function () {
+        this.page.url = "https://me.harley-xk.studio/2019/03/14/2019-cookiecutter/";  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "基于 Cookiecutter 打造 iOS 项目模版"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        
+        (function () { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://harley-xk-studio.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="//github.com/Harley-xk" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <a href="https://weibo.com/u/1161848005" class="iconfont-archer weibo" target="_blank" title=weibo></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+            
+                <a href="mailto:harley.gb@foxmail.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span>
+        <span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+        <span> @ author <a href="https://github.com/Harley-xk" target="_blank" rel="noopener">Harley-xk</a></span>
+    </div>
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:40vh;
+
+    >
+        <div class="toc-catalog">
+            <!-- <span class="iconfont-archer catalog-icon">&#xe613;</span><span></span> -->
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">2.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装"><span class="toc-number">3.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建模版"><span class="toc-number">4.</span> <span class="toc-text">创建模版</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新建项目"><span class="toc-number">4.1.</span> <span class="toc-text">新建项目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件"><span class="toc-number">4.2.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#钩子"><span class="toc-number">4.3.</span> <span class="toc-text">钩子</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#自动安装-pods"><span class="toc-number">4.3.1.</span> <span class="toc-text">自动安装 pods</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用"><span class="toc-number">5.</span> <span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#分发模版"><span class="toc-number">5.1.</span> <span class="toc-text">分发模版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建项目"><span class="toc-number">5.2.</span> <span class="toc-text">创建项目</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束语"><span class="toc-number">6.</span> <span class="toc-text">结束语</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 10
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/13</span><a class="archive-post-title" href= "/2020/02/12/install-swift-on-ubuntu/" >在 Ubuntu 系统中安装 Swift</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/03</span><a class="archive-post-title" href= "/2020/02/02/2020-2020/" >2020</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/14</span><a class="archive-post-title" href= "/2019/03/14/2019-cookiecutter/" >基于 Cookiecutter 打造 iOS 项目模版</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/08</span><a class="archive-post-title" href= "/2018/05/07/2018-maliang/" >神笔马良——基于 Metal 的涂鸦框架</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2017 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/14</span><a class="archive-post-title" href= "/2017/11/13/2017-chrysan/" >Swift 造轮子之自制 HUD</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/29</span><a class="archive-post-title" href= "/2017/06/28/2017-codable-swift-4/" >Swift 4 踩坑之 Codable 协议</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/26</span><a class="archive-post-title" href= "/2017/05/26/2017-assets-processor/" >使用 Assets Processor 处理 Xcode 图片资源</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/26</span><a class="archive-post-title" href= "/2017/04/25/2017-status-bar-styles/" >UIStatusBarStyle 解惑</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/07</span><a class="archive-post-title" href= "/2017/04/07/2017-tableview-cell-row-actions/" >实现 UITableViewCell 侧滑操作列表</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/25</span><a class="archive-post-title" href= "/2017/03/24/2017-swift-lint/" >使用 SwiftLint 进行 Swift 代码规范检查</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="iOS"><span class="iconfont-archer">&#xe606;</span>iOS</span>
+    
+        <span class="sidebar-tag-name" data-tags="Swift"><span class="iconfont-archer">&#xe606;</span>Swift</span>
+    
+        <span class="sidebar-tag-name" data-tags="Xcode"><span class="iconfont-archer">&#xe606;</span>Xcode</span>
+    
+        <span class="sidebar-tag-name" data-tags="随笔"><span class="iconfont-archer">&#xe606;</span>随笔</span>
+    
+        <span class="sidebar-tag-name" data-tags="Metal"><span class="iconfont-archer">&#xe606;</span>Metal</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Harley.xk"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
